@@ -1,0 +1,91 @@
+/* SearchForm.css */
+
+/* container for the form */
+.search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 640px; /* equivalent to max-w-xl */
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  border-radius: 0;
+  height:40%;
+}
+
+.search-form:hover,
+.search-form:focus-within {
+  border-bottom-color: #fbbf24; /* amber-400 */
+}
+
+/* 🔍 icon */
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #fbbf24;
+  font-size: 1.2rem;
+}
+
+/* main input */
+.search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  padding-left: 2.5rem;
+  padding-right: 8rem;
+  font-size: 0.9rem;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* year input */
+.year-input {
+  position: absolute;
+  right: 6.2rem;
+  width: 5rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  color: white;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.year-input:focus {
+  border-color: #fbbf24;
+}
+
+/* button */
+.search-button {
+  position: absolute;
+  right: 0.5rem;
+  background: linear-gradient(to right, #fbbf24, #fde047);
+  color: #000;
+  border: none;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.4rem 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(251, 191, 36, 0.3);
+  transition: all 0.3s ease;
+}
+
+.search-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(251, 191, 36, 0.4);
+}
+
+.search-button:active {
+  transform: scale(0.97);
+}
+
