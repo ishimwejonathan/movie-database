@@ -107,7 +107,7 @@ export default function Home() {
       <div className="mx-auto max-w-6xl">
         {/* Title + Search */}
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-2xl font-semibold">Streaming Movies Platform</h1>
+          <h1 className="text-2xl font-semibold text-yellow-400">Streaming Movies Platform</h1>
 
           <form onSubmit={onSubmit} className="search-form">
   <span className="search-icon">🔍</span>
@@ -138,10 +138,10 @@ export default function Home() {
         {/* Friendly empty state so the page isn’t blank */}
         {!loading && !error && movies.length === 0 && !query && (
           <div className="mx-auto grid max-w-2xl gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
-            <p className="text-base font-semibold">Start by searching a movie</p>
+            <p className="text-base font-semibold text-yellow-400">Start by searching a movie</p>
             <p className="text-sm text-white/70">
-              Try <span className="font-mono">Inception</span>, <span className="font-mono">Avatar</span>, or
-              <span className="font-mono"> Interstellar</span>.
+              Try <span className="font-mono text-blue-400">seburikoko</span>, <span className="font-mono text-blue-400">Avatar</span>, or
+              <span className="font-mono text-blue-400"> Interstellar</span>.
             </p>
           </div>
         )}

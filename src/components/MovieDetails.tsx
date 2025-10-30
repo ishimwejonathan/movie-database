@@ -1,4 +1,12 @@
-const MovieDetails = ({ movie, onClose }) => {
+import React from "react";
+import type { Movie } from "./MovieCard"; // reuse the Movie type from MovieCard
+
+type MovieDetailsProps = {
+  movie: Movie | null;
+  onClose: () => void;
+};
+
+const MovieDetails: React.FC<MovieDetailsProps> = ({ movie, onClose }) => {
   if (!movie) return null;
 
   return (

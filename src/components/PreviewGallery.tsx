@@ -10,12 +10,13 @@ type OmdbMovie = {
 
 type Props = {
   apiKey: string;
-  onPick?: (movie: OmdbMovie) => void; // e.g., open details
+  onPick?: (movie: OmdbMovie) => void;
   title?: string;
-  seedIds?: string[];                   // override curated list if you like
+  seedIds?: string[];
+  searchTerm?: string; // ✅ Add this prop
 };
 
-// Popular IMDb IDs (stable picks)
+// Default IMDb IDs
 const DEFAULT_SEED_IDS = [
   "tt1375666", // Inception
   "tt0816692", // Interstellar
@@ -34,6 +35,7 @@ export default function PreviewGallery({
   onPick,
   title = "Featured picks",
   seedIds = DEFAULT_SEED_IDS,
+  searchTerm, // ✅ Include it here too
 }: Props) {
   const [items, setItems] = useState<OmdbMovie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,37 +56,63 @@ export default function PreviewGallery({
     const run = async () => {
       setLoading(true);
       setError("");
+
       try {
-        const urlFor = (id: string) => {
-          const u = new URL("https://www.omdbapi.com/");
-          u.searchParams.set("apikey", apiKey);
-          u.searchParams.set("i", id);
-          u.searchParams.set("plot", "short");
-          return u.toString();
-        };
+        let movies: OmdbMovie[] = [];
 
-        const tasks = seedIds.slice(0, 12).map(async (id) => {
-          const res = await fetch(urlFor(id), { signal: controller.signal });
+        // ✅ NEW: If a searchTerm is given, search by keyword instead of IDs
+        if (searchTerm) {
+          const url = new URL("https://www.omdbapi.com/");
+          url.searchParams.set("apikey", apiKey);
+          url.searchParams.set("s", searchTerm);
+          url.searchParams.set("type", "movie");
+
+          const res = await fetch(url.toString(), { signal: controller.signal });
           const data = await res.json();
-          if (data && data.Response !== "False") {
-            const m: OmdbMovie = {
-              Title: data.Title,
-              Year: data.Year,
-              imdbID: data.imdbID,
-              Type: data.Type,
-              Poster: data.Poster,
-            };
-            return m;
+
+          if (data.Response === "True") {
+            movies = data.Search.map((m: any) => ({
+              Title: m.Title,
+              Year: m.Year,
+              imdbID: m.imdbID,
+              Type: m.Type,
+              Poster: m.Poster,
+            }));
+          } else {
+            setError(data.Error || "No results found.");
           }
-          return null;
-        });
+        } else {
+          // ✅ Fallback: fetch movies by seed IDs (original logic)
+          const urlFor = (id: string) => {
+            const u = new URL("https://www.omdbapi.com/");
+            u.searchParams.set("apikey", apiKey);
+            u.searchParams.set("i", id);
+            u.searchParams.set("plot", "short");
+            return u.toString();
+          };
 
-        const settled = await Promise.allSettled(tasks);
-        const ok = settled
-          .map((r) => (r.status === "fulfilled" ? r.value : null))
-          .filter(Boolean) as OmdbMovie[];
+          const tasks = seedIds.slice(0, 12).map(async (id) => {
+            const res = await fetch(urlFor(id), { signal: controller.signal });
+            const data = await res.json();
+            if (data && data.Response !== "False") {
+              return {
+                Title: data.Title,
+                Year: data.Year,
+                imdbID: data.imdbID,
+                Type: data.Type,
+                Poster: data.Poster,
+              } as OmdbMovie;
+            }
+            return null;
+          });
 
-        setItems(ok);
+          const settled = await Promise.allSettled(tasks);
+          movies = settled
+            .map((r) => (r.status === "fulfilled" ? r.value : null))
+            .filter(Boolean) as OmdbMovie[];
+        }
+
+        setItems(movies);
       } catch (e: any) {
         if (e?.name === "AbortError") return;
         setError("Failed to load featured picks. Please try again.");
@@ -95,7 +123,7 @@ export default function PreviewGallery({
 
     run();
     return () => controller.abort();
-  }, [apiKey, seedIds.join(",")]);
+  }, [apiKey, searchTerm, seedIds.join(",")]); // ✅ include searchTerm dependency
 
   const Skeleton = () => (
     <div className="group relative overflow-hidden rounded-2xl bg-white/5 ring-1 ring-white/10">
@@ -111,7 +139,6 @@ export default function PreviewGallery({
     <section className="mx-auto max-w-7xl px-6">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
-        {/* place for “See more” later if you want */}
       </div>
 
       {error && (
